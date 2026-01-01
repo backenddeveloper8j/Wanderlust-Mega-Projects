@@ -1,6 +1,6 @@
 resource "aws_key_pair" "deployer" {
   key_name   = "terra-automate-key"
-  public_key = file("/Users/shubham/Documents/work/TrainWithShubham/terra-practice/terra-key.pub")
+  public_key = file("/terra-key.pub")
 }
 
 resource "aws_default_vpc" "default" {
@@ -12,7 +12,7 @@ resource "aws_security_group" "allow_user_to_connect" {
   description = "Allow user to connect"
   vpc_id      = aws_default_vpc.default.id
   ingress {
-    description = "port 22 allow"
+    description = "port 22 SSH allow"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -28,7 +28,7 @@ resource "aws_security_group" "allow_user_to_connect" {
   }
 
   ingress {
-    description = "port 80 allow"
+    description = "port 80 HTTP allow"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -36,9 +36,57 @@ resource "aws_security_group" "allow_user_to_connect" {
   }
 
   ingress {
-    description = "port 443 allow"
+    description = "port 443 HTTPS allow"
     from_port   = 443
     to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "port 30000-32767 Kubernetes Node Ports allow"
+    from_port   = 30000
+    to_port     = 32767
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "port 465 SMTPS allow"
+    from_port   = 465
+    to_port     = 465
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "port 6379 redis allow"
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "port 3000-10000 App. Ports allow"
+    from_port   = 3000
+    to_port     = 10000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "port 25 SMTP allow"
+    from_port   = 25
+    to_port     = 25
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "port 4643 K8s allow"
+    from_port   = 4643
+    to_port     = 4643
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -57,7 +105,7 @@ resource "aws_instance" "testinstance" {
     Name = "Automate"
   }
   root_block_device {
-    volume_size = 30 
+    volume_size = 30
     volume_type = "gp3"
   }
 }
